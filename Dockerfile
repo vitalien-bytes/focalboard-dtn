@@ -3,16 +3,16 @@ FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
 
-# Installer make et git
-RUN apk add --no-cache make git
+# Installer les dépendances
+RUN apk add --no-cache make git nodejs npm
 
-# Télécharger le code source de Focalboard
+# Cloner le dépôt officiel de Focalboard
 RUN git clone https://github.com/mattermost/focalboard.git .
 
-# Compiler le serveur
+# Construire uniquement le backend
 RUN make server-linux
 
-# Étape 2 : créer l'image finale
+# Étape 2 : image finale allégée
 FROM alpine:latest
 
 WORKDIR /opt/focalboard
@@ -20,11 +20,11 @@ WORKDIR /opt/focalboard
 # Copier le binaire compilé
 COPY --from=builder /app/bin/focalboard-server ./bin/focalboard-server
 
-# Copier la configuration (le fichier que tu as mis dans ton repo)
-COPY ./config.json ./config/config.json
+# Copier la configuration (depuis ton dépôt GitHub)
+COPY ./config.json ./config.json
 
-# Exposer le port utilisé par Render
+# Exposer le port pour Render
 EXPOSE 8000
 
-# Démarrer le serveur
-CMD ["./bin/focalboard-server", "--config", "./config/config.json"]
+# Lancer le serveur avec ton fichier config
+CMD ["./bin/focalboard-server", "--config", "./config.json"]
