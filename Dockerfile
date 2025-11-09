@@ -10,8 +10,8 @@ WORKDIR /app
 # Cloner le dépôt officiel de Focalboard
 RUN git clone https://github.com/mattermost/focalboard.git .
 
-# Aller dans le dossier du serveur
-WORKDIR /app/server
+# Aller dans le dossier racine du serveur Go
+WORKDIR /app
 
 # Télécharger les dépendances Go
 RUN go mod download
@@ -25,7 +25,7 @@ FROM alpine:latest
 WORKDIR /opt/focalboard
 
 # Copier le binaire compilé
-COPY --from=builder /app/server/focalboard-server ./focalboard-server
+COPY --from=builder /app/focalboard-server ./focalboard-server
 
 # Copier la configuration depuis ton dépôt GitHub
 COPY config.json ./config.json
