@@ -4,20 +4,20 @@ FROM golang:1.21-alpine AS builder
 # Installer les dépendances nécessaires
 RUN apk add --no-cache make git nodejs npm
 
-# Définir le dossier de travail
+# Dossier de travail principal
 WORKDIR /app
 
 # Cloner le dépôt officiel de Focalboard
 RUN git clone https://github.com/mattermost/focalboard.git .
 
-# Aller dans le dossier du serveur Go (où se trouve go.mod)
+# Aller dans le dossier du serveur Go
 WORKDIR /app/server
 
 # Télécharger les dépendances Go
 RUN go mod download
 
-# ✅ Compiler le serveur depuis le bon dossier (et non un fichier)
-RUN go build -v -o focalboard-server ./cmd/focalboard
+# ✅ Compiler le serveur depuis le bon dossier
+RUN go build -v -o focalboard-server ./cmd/server
 
 # Étape 2 : créer l'image finale allégée
 FROM alpine:latest
