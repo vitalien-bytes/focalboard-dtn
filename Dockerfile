@@ -16,8 +16,8 @@ WORKDIR /app/server
 # Télécharger les dépendances Go
 RUN go mod download
 
-# ✅ Compiler le serveur depuis le bon dossier
-RUN go build -v -o focalboard-server ./cmd/server
+# ✅ Compiler le serveur depuis le bon dossier (le bon nom actuel)
+RUN go build -v -o focalboard-server ./cmd/focalboard-server
 
 # Étape 2 : créer l'image finale allégée
 FROM alpine:latest
@@ -28,11 +28,11 @@ WORKDIR /opt/focalboard
 # Copier le binaire compilé
 COPY --from=builder /app/server/focalboard-server ./focalboard-server
 
-# Copier la configuration depuis ton dépôt GitHub
+# Copier la configuration
 COPY config.json ./config.json
 
-# Exposer le port 8000 pour Render
+# Exposer le port 8000
 EXPOSE 8000
 
-# Lancer le serveur avec la configuration
+# Lancer le serveur
 CMD ["./focalboard-server", "--config", "./config.json"]
