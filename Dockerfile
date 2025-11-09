@@ -21,7 +21,7 @@ WORKDIR /opt/focalboard
 COPY --from=builder /app/bin/focalboard-server ./bin/focalboard-server
 
 # Copier la configuration (depuis ton dépôt GitHub)
-COPY ./config.json ./config.json
+COPY config.json ./config.json
 
 # Exposer le port pour Render
 EXPOSE 8000
