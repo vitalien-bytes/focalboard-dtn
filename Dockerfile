@@ -7,27 +7,30 @@ RUN apk add --no-cache make git nodejs npm
 # Définir le dossier de travail
 WORKDIR /app
 
-# Cloner le dépôt officiel Focalboard
+# Cloner le dépôt officiel de Focalboard
 RUN git clone https://github.com/mattermost/focalboard.git .
 
-# Aller dans le dossier du serveur Go
+# Aller dans le dossier du serveur
 WORKDIR /app/server
 
+# Télécharger les dépendances Go
+RUN go mod download
+
 # Compiler le serveur
-RUN go build -o focalboard-server main.go
+RUN go build -o focalboard-server ./cmd/focalboard-server/main.go
 
 # Étape 2 : créer l'image finale allégée
 FROM alpine:latest
 
 WORKDIR /opt/focalboard
 
-# Copier le binaire depuis la première étape
+# Copier le binaire compilé
 COPY --from=builder /app/server/focalboard-server ./focalboard-server
 
-# Copier le fichier de configuration (depuis ton dépôt GitHub)
+# Copier la configuration depuis ton dépôt GitHub
 COPY config.json ./config.json
 
-# Exposer le port pour Render
+# Exposer le port 8000 pour Render
 EXPOSE 8000
 
 # Lancer le serveur avec la config
